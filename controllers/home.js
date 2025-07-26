@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const home = async (req, res) => {
     try {
         const response = await axios.get('https://tasty.p.rapidapi.com/recipes/list?from=0&size=20&tags=under_30_minutes',
