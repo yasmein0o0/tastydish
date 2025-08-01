@@ -1,13 +1,13 @@
 import { pool } from "../database/pg.js";
 
 export const logOut = async (req, res) => {
-    const id = req.user.id;
-    console.log('senttt')
+    const email = req.user.email;
+    console.log(email)
 
     try {
         const result = await pool.query(
-            'UPDATE users SET refresh_token = NULL WHERE id=$1 RETURNING *',
-            [id]
+            'UPDATE users SET refresh_token = NULL WHERE email=$1 RETURNING *',
+            [email]
         );
 
         if (result.rowCount === 0) {
