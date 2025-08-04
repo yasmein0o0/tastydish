@@ -1,4 +1,5 @@
 import axios from "axios";
+import "dotenv/config"
 
 export const searchResults = async (req, res) => {
     const dish = req.query.dish;
@@ -10,7 +11,7 @@ export const searchResults = async (req, res) => {
             {
                 method: 'GET',
                 headers: {
-                    'x-rapidapi-key': '0c8b8a1248msh05791a5363eb7a7p12b41ajsne1bcf2853fb7',
+                    'x-rapidapi-key': process.env.TASTY_API_KEY,
                     'x-rapidapi-host': 'tasty.p.rapidapi.com'
                 }
             }
