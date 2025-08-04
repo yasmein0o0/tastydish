@@ -22,18 +22,22 @@ export const signup = async (req, res) => {
             return res.status(409).json({ message: `${email} is already used` });
         }
 
+        const result = await pool.query('INSERT INTO users(name,email,password) values($1,$2,$3)',
+            [username, email, hashedPassword]);
+
         //1- hash password
         const hashedPassword = await bcrypt.hash(password, 10)
 
         //2- generate refresh token
-        const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" })
+        const userId = result.rows[0].id
+        console.log(userId)
+        const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" })
 
         //3- generate access token
-        const accessToken = jwt.sign({ email }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" })
+        const accessToken = jwt.sign({ userId }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" })
 
-        //4- save username, email, password, refersh token in db
-        const result = await pool.query('INSERT INTO users(name,email,password,refresh_token) values($1,$2,$3,$4) RETURNING *',
-            [username, email, hashedPassword, refreshToken]);
+        //4- save refersh token in db
+        await pool.query('UPDATE users SET refresh_token = $1 WHERE id = $2', [refreshToken, userId]);
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
