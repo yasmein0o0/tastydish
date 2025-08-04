@@ -29,7 +29,7 @@ export const login = async (req, res) => {
         // 4- update refresh token in DB
         await pool.query(
             'UPDATE users SET refresh_token = $1 WHERE id = $2',
-            [refreshToken, id]
+            [refreshToken, result.rows[0].id]
         );
 
         // 5- set cookies

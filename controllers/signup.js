@@ -22,13 +22,15 @@ export const signup = async (req, res) => {
             return res.status(409).json({ message: `${email} is already used` });
         }
 
-        const result = await pool.query('INSERT INTO users(name,email,password) values($1,$2,$3)',
-            [username, email, hashedPassword]);
-
         //1- hash password
         const hashedPassword = await bcrypt.hash(password, 10)
 
+
+        const result = await pool.query('INSERT INTO users(name,email,password) values($1,$2,$3) RETURNING*',
+            [username, email, hashedPassword]);
+
         //2- generate refresh token
+        console.log(result)
         const userId = result.rows[0].id
         console.log(userId)
         const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" })
