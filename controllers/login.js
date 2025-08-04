@@ -1,6 +1,7 @@
 import { pool } from "../database/pg.js";
 import jwt from 'jsonwebtoken';
 import xss from "xss";
+
 import bcrypt from "bcrypt";
 
 export const login = async (req, res) => {
@@ -21,13 +22,14 @@ export const login = async (req, res) => {
         }
 
         // 3- sign tokens
-        const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
-        const accessToken = jwt.sign({ email }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
+        const id = result.rows[0].id
+        const refreshToken = jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
+        const accessToken = jwt.sign({ id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
 
         // 4- update refresh token in DB
         await pool.query(
             'UPDATE users SET refresh_token = $1 WHERE id = $2',
-            [refreshToken, result.rows[0].id]
+            [refreshToken, id]
         );
 
         // 5- set cookies
