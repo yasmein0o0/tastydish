@@ -5,8 +5,10 @@ import router from './routes/allRoutes.js';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import { globalLimiter } from './middlewares/rateLimit.js';
+import "dotenv/config"
 const app = express();
 app.use(cors({
+    origin: process.env.FRONTEND_URL,
     credentials: true
 }));
 app.use(globalLimiter)
