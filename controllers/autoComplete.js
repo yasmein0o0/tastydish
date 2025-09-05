@@ -4,6 +4,7 @@ export const autoComplete = async (req, res) => {
     const prefix = req.body.prefix;
 
     console.log(prefix)
+    console.log(`https://tasty.p.rapidapi.com/recipes/auto-complete?prefix=${prefix}`)
 
     try {
         const response = await axios.get(

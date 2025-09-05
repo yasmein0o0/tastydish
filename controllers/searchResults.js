@@ -3,11 +3,10 @@ import "dotenv/config"
 
 export const searchResults = async (req, res) => {
     const dish = req.query.dish;
-    console.log(dish)
     const encodedDish = encodeURIComponent(dish);
     try {
         const response = await axios.get(
-            `https://tasty.p.rapidapi.com/recipes/list?from=0&size=10&q=${encodedDish}`,
+            `https://tasty.p.rapidapi.com/recipes/list?from=0&size=40&q=${encodedDish}`,
             {
                 method: 'GET',
                 headers: {

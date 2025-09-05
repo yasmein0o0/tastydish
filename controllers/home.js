@@ -3,7 +3,7 @@ import "dotenv/config"
 
 export const home = async (req, res) => {
     try {
-        const response = await axios.get('https://tasty.p.rapidapi.com/recipes/list?from=0&size=20&tags=under_30_minutes',
+        const response = await axios.get('https://tasty.p.rapidapi.com/recipes/list?from=40&size=60&tags=under_30_minutes&q=chicken',
             {
                 method: 'GET',
                 headers: {
