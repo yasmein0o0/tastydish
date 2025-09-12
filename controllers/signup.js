@@ -25,7 +25,6 @@ export const signup = async (req, res) => {
         //1- hash password
         const hashedPassword = await bcrypt.hash(password, 10)
 
-
         const result = await pool.query('INSERT INTO users(name,email,password) values($1,$2,$3) RETURNING*',
             [username, email, hashedPassword]);
 
@@ -41,13 +40,7 @@ export const signup = async (req, res) => {
         //4- save refersh token in db
         await pool.query('UPDATE users SET refresh_token = $1 WHERE id = $2', [refreshToken, userId]);
 
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 15 * 60 * 1000,
-        });
+        // 5- set refresh token cookie ONLY
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -56,14 +49,15 @@ export const signup = async (req, res) => {
         });
 
         const { id, name, email: savedEmail } = result.rows[0];
-        console.log(accessToken)
+
+        // 6- send access token in response body (for Redux)
         return res.status(201).json({
             message: "Signup successful",
+            accessToken,
             user: { id, name, email: savedEmail }
         });
 
     } catch (error) {
         return res.status(500).json({ message: `server error: ${error}` })
     }
-
 }

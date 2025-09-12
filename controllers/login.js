@@ -32,13 +32,7 @@ export const login = async (req, res) => {
             [refreshToken, result.rows[0].id]
         );
 
-        // 5- set cookies
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 30 * 60 * 1000, // 30 minutes
-        });
+        // 5- set refresh token cookie ONLY
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -46,8 +40,10 @@ export const login = async (req, res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         });
 
+        // 6- send access token in response body (for Redux)
         return res.status(200).json({
             message: "Login successful",
+            accessToken,
             user: { id: result.rows[0].id, name: result.rows[0].name, email: result.rows[0].email }
         });
 
