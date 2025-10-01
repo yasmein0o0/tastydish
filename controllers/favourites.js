@@ -21,7 +21,6 @@ export const addToFavourites = async (req, res) => {
 // GET /favourites
 export const getFavourites = async (req, res) => {
     const userId = req.user.id;
-
     try {
         const result = await pool.query(
             "SELECT * FROM favourites WHERE user_id = $1",
@@ -36,8 +35,7 @@ export const getFavourites = async (req, res) => {
 // DELETE /favourites/:dishId
 export const removeFromFavourites = async (req, res) => {
     const userId = req.user.id;
-    const dishId = req.params.dishId;
-
+    const { dishId } = req.body;
     try {
         const result = await pool.query(
             "DELETE FROM favourites WHERE user_id = $1 AND dish_id = $2 RETURNING *",
