@@ -22,14 +22,14 @@ export const login = async (req, res) => {
         }
 
         // 3- sign tokens
-        const id = result.rows[0].id
-        const refreshToken = jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
-        const accessToken = jwt.sign({ id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
+        const user = result.rows[0]
+        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
+        const accessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" });
 
         // 4- update refresh token in DB
         await pool.query(
             'UPDATE users SET refresh_token = $1 WHERE id = $2',
-            [refreshToken, result.rows[0].id]
+            [refreshToken, user.id]
         );
 
         // 5- set refresh token cookie ONLY
