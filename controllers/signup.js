@@ -5,7 +5,6 @@ import "dotenv/config"
 import bcrypt from "bcrypt";
 
 export const signup = async (req, res) => {
-    console.log('sent')
     const username = xss(req.body.name);
     const email = xss(req.body.email);
     const password = xss(req.body.password);
@@ -29,16 +28,14 @@ export const signup = async (req, res) => {
             [username, email, hashedPassword]);
 
         //2- generate refresh token
-        console.log(result)
-        const userId = result.rows[0].id
-        console.log(userId)
-        const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" })
+        const user = result.rows[0]
+        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" })
 
         //3- generate access token
-        const accessToken = jwt.sign({ userId }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" })
+        const accessToken = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "30m" })
 
         //4- save refersh token in db
-        await pool.query('UPDATE users SET refresh_token = $1 WHERE id = $2', [refreshToken, userId]);
+        await pool.query('UPDATE users SET refresh_token = $1 WHERE id = $2', [refreshToken, user.id]);
 
         // 5- set refresh token cookie ONLY
         res.cookie("refreshToken", refreshToken, {
@@ -59,5 +56,6 @@ export const signup = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ message: `server error: ${error}` })
+
     }
 }
